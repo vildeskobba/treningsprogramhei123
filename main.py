@@ -121,38 +121,35 @@ st.divider()
 for idx, ex in enumerate(st.session_state.data["exercises"]):
     ant_sett = int(ex["sets"])
 
-    # topplinje: navn, pil opp, pil ned, rediger/slett
-    top_cols = st.columns([0.5, 0.1, 0.1, 0.3])
-
+    # topplinje: KUN navn (+ note)
+    top_cols = st.columns([1])
     with top_cols[0]:
         st.subheader(ex["name"])
-        # vis notat hvis finnes
         if "note" in ex and ex["note"]:
             st.caption(ex["note"])
 
-    # checkbokser for set (horisontal rad slik du hadde)
+    # checkbokser for settene
     cols = st.columns(ant_sett)
     for i, s in enumerate(range(1, ant_sett + 1)):
         key = f"{ex['name']}_{s}"
         with cols[i]:
             st.checkbox(f"Set {s}", key=key)
-            # sync fra session_state -> persistent lagring
             if st.session_state.data["checks"][key] != st.session_state[key]:
                 st.session_state.data["checks"][key] = st.session_state[key]
                 save_data(st.session_state.data)
 
-    with top_cols[1]:
-        # flytt opp
+    # KNAPPER UNDER SETTENE ⬇️
+    btn_cols = st.columns(3)
+
+    with btn_cols[0]:
         if st.button("⬆️", key=f"up_{idx}", help="Flytt opp"):
             if idx > 0:
-                # bytt rekkefølge i lista
                 lst = st.session_state.data["exercises"]
                 lst[idx - 1], lst[idx] = lst[idx], lst[idx - 1]
                 save_data(st.session_state.data)
                 st.rerun()
 
-    with top_cols[2]:
-        # flytt ned
+    with btn_cols[1]:
         if st.button("⬇️", key=f"down_{idx}", help="Flytt ned"):
             lst = st.session_state.data["exercises"]
             if idx < len(lst) - 1:
@@ -160,18 +157,15 @@ for idx, ex in enumerate(st.session_state.data["exercises"]):
                 save_data(st.session_state.data)
                 st.rerun()
 
-    with top_cols[3]:
+    with btn_cols[2]:
         if st.button("Rediger / Slett", key=f"editbtn_{idx}"):
-            # toggle editor for denne øvelsen
             if st.session_state.edit_index == idx:
                 st.session_state.edit_index = None
             else:
                 st.session_state.edit_index = idx
             st.rerun()
 
-
-
-    # editorpanel (bare synlig for valgt øvelse)
+    # editorpanel som før
     if st.session_state.edit_index == idx:
         st.markdown("**Rediger denne øvelsen:**")
         with st.form(f"edit_form_{idx}"):
@@ -200,7 +194,6 @@ for idx, ex in enumerate(st.session_state.data["exercises"]):
             with col_edit[2]:
                 avbryt = st.form_submit_button("Avbryt")
 
-        # trykk "lagre endringer"
         if lagre:
             gammelt_navn = ex["name"]
             gammelt_ant_sett = ant_sett
@@ -208,7 +201,7 @@ for idx, ex in enumerate(st.session_state.data["exercises"]):
 
             nytt_navn_clean = nytt_navn.strip()
             if nytt_navn_clean == "":
-                nytt_navn_clean = gammelt_navn  # fallback så vi ikke tømmer navnet
+                nytt_navn_clean = gammelt_navn
 
             ny_ex = {
                 "name": nytt_navn_clean,
@@ -216,7 +209,6 @@ for idx, ex in enumerate(st.session_state.data["exercises"]):
                 "note": nytt_notat.strip()
             }
 
-            # bygg nye checkbox-keys for den redigerte øvelsen
             nye_checks_for_ex = {}
             for s in range(1, nytt_antall_sett + 1):
                 gammel_key = f"{gammelt_navn}_{s}"
@@ -226,13 +218,10 @@ for idx, ex in enumerate(st.session_state.data["exercises"]):
                     s <= gammelt_ant_sett
                     and gammel_key in st.session_state.data["checks"]
                 ):
-                    # behold eksisterende verdi
                     nye_checks_for_ex[ny_key] = st.session_state.data["checks"][gammel_key]
                 else:
-                    # nye sett starter som False
                     nye_checks_for_ex[ny_key] = False
 
-            # fjern gamle keys fra både persistent og session_state
             for s in range(1, gammelt_ant_sett + 1):
                 gammel_key = f"{gammelt_navn}_{s}"
                 if gammel_key in st.session_state.data["checks"]:
@@ -240,23 +229,17 @@ for idx, ex in enumerate(st.session_state.data["exercises"]):
                 if gammel_key in st.session_state:
                     del st.session_state[gammel_key]
 
-            # legg inn nye keys i persistent og session_state
             for key_name, val in nye_checks_for_ex.items():
                 st.session_state.data["checks"][key_name] = val
                 st.session_state[key_name] = val
 
-            # oppdater selve øvelsen i lista
             st.session_state.data["exercises"][idx] = ny_ex
 
             save_data(st.session_state.data)
-
-            # lukk editor
             st.session_state.edit_index = None
             st.rerun()
 
-        # trykk "slett øvelsen"
         if slett:
-            # slett alle checkbox-keys knyttet til denne øvelsen
             for s in range(1, ant_sett + 1):
                 k = f"{ex['name']}_{s}"
                 if k in st.session_state.data["checks"]:
@@ -264,21 +247,18 @@ for idx, ex in enumerate(st.session_state.data["exercises"]):
                 if k in st.session_state:
                     del st.session_state[k]
 
-            # slett selve øvelsen
             st.session_state.data["exercises"].pop(idx)
-
             save_data(st.session_state.data)
 
-            # lukk editor
             st.session_state.edit_index = None
             st.rerun()
 
-        # trykk "avbryt"
         if avbryt:
             st.session_state.edit_index = None
             st.rerun()
 
     st.markdown("---")
+
 
 # ---------------- LEGG TIL NY ØVELSE ----------------
 st.subheader("Legg til ny øvelse")
