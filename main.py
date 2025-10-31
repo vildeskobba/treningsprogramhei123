@@ -10,12 +10,31 @@ st.markdown(
             background-color: #2e111a;
             color: #ffe9ec;
         }
+
+        /* Tekstfarge i hele appen */
+        *, label, p, span, h1, h2, h3, h4, h5, h6 {
+            color: #ffe9ec !important;
+        }
+
+        /* Bokser og inputfelt */
         div[data-testid="stCheckbox"], 
         div[data-testid="stNumberInput"], 
         div[data-testid="stTextInput"],
         textarea, input {
             background-color: #2e111a !important;
             color: #ffe9ec !important;
+        }
+
+        /* Knapper */
+        button[kind="primary"], button[kind="secondary"], button {
+            background-color: #2e111a !important;
+            color: #ffe9ec !important;
+            border: 1px solid #ffe9ec !important;
+        }
+
+        /* Hover-effekt på knapper */
+        button:hover {
+            background-color: #471d29 !important;
         }
     </style>
     """,
