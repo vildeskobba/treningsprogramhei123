@@ -1,0 +1,17 @@
+{
+    "exercises": [
+        {
+            "name": "Knebøy",
+            "sets": 3
+        },
+        {
+            "name": "Benkpress",
+            "sets": 3
+        },
+        {
+            "name": "Markløft",
+            "sets": 3
+        }
+    ],
+    "checks": {}
+}
