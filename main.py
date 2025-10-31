@@ -2,7 +2,7 @@ import streamlit as st
 import json
 import os
 
-st.set_page_config(page_title="Treningsprogram", layout="wide")
+st.set_page_config(page_title="Vildes treningsprogram<3", layout="wide")
 st.title("Treningsprogram")
 
 DATAFIL = "progress.json"
@@ -87,6 +87,9 @@ for idx, ex in enumerate(st.session_state.data["exercises"]):
 
     with top_cols[0]:
         st.subheader(ex["name"])
+        if "note" in ex and ex["note"]:
+            st.caption(ex["note"])
+
 
     with top_cols[1]:
         # flytt opp
@@ -236,7 +239,7 @@ st.subheader("Legg til ny øvelse")
 
 with st.form("ny_øvelse_form"):
     nytt_navn = st.text_input(
-        "Navn på øvelse (ta med reps i navnet hvis du vil, f.eks. 'Benkpress 8-8-6')",
+        "Navn på øvelse (ta med antall reps i navnet)",
         value=""
     )
     nytt_antall_sett = st.number_input(
@@ -251,10 +254,13 @@ with st.form("ny_øvelse_form"):
 
     if submit:
         if nytt_navn.strip() != "":
+            nytt_notat = st.text_input("Notat (valgfritt)", value="")
             ny_øvelse = {
                 "name": nytt_navn.strip(),
                 "sets": int(nytt_antall_sett),
+                "note": nytt_notat.strip()
             }
+
 
             # legg til i lista
             st.session_state.data["exercises"].append(ny_øvelse)
