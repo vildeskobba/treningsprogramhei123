@@ -19,7 +19,7 @@ def lag_standard_program():
 def load_data():
     # struktur vi forventer:
     # {
-    #   "exercises": [ { "name": "...", "sets": 3 }, ... ],
+    #   "exercises": [ { "name": "...", "sets": 3, "note": "..."? }, ... ],
     #   "checks": { "Benkpress_1": true, ... }
     # }
     if not os.path.exists(DATAFIL):
@@ -87,9 +87,9 @@ for idx, ex in enumerate(st.session_state.data["exercises"]):
 
     with top_cols[0]:
         st.subheader(ex["name"])
+        # vis notat hvis finnes
         if "note" in ex and ex["note"]:
             st.caption(ex["note"])
-
 
     with top_cols[1]:
         # flytt opp
@@ -119,7 +119,7 @@ for idx, ex in enumerate(st.session_state.data["exercises"]):
                 st.session_state.edit_index = idx
             st.rerun()
 
-    # checkbokser for set
+    # checkbokser for set (horisontal rad slik du hadde)
     cols = st.columns(ant_sett)
     for i, s in enumerate(range(1, ant_sett + 1)):
         key = f"{ex['name']}_{s}"
@@ -146,6 +146,10 @@ for idx, ex in enumerate(st.session_state.data["exercises"]):
                 step=1,
                 value=ant_sett
             )
+            nytt_notat = st.text_area(
+                "Notat (valgfritt)",
+                value=ex.get("note", "")
+            )
 
             col_edit = st.columns([0.4, 0.3, 0.3])
             with col_edit[0]:
@@ -167,7 +171,8 @@ for idx, ex in enumerate(st.session_state.data["exercises"]):
 
             ny_ex = {
                 "name": nytt_navn_clean,
-                "sets": nytt_antall_sett
+                "sets": nytt_antall_sett,
+                "note": nytt_notat.strip()
             }
 
             # bygg nye checkbox-keys for den redigerte øvelsen
@@ -190,9 +195,9 @@ for idx, ex in enumerate(st.session_state.data["exercises"]):
             for s in range(1, gammelt_ant_sett + 1):
                 gammel_key = f"{gammelt_navn}_{s}"
                 if gammel_key in st.session_state.data["checks"]:
-                    del st.session_state.data["checks"][gammel_key]
+                    del st.session_state.data["checks"][gammelt_key]
                 if gammel_key in st.session_state:
-                    del st.session_state[gammel_key]
+                    del st.session_state[gammelt_key]
 
             # legg inn nye keys i persistent og session_state
             for key_name, val in nye_checks_for_ex.items():
@@ -249,18 +254,20 @@ with st.form("ny_øvelse_form"):
         step=1,
         value=3
     )
+    nytt_notat = st.text_area(
+        "Notat (valgfritt)",
+        value=""
+    )
 
     submit = st.form_submit_button("Legg til øvelse")
 
     if submit:
         if nytt_navn.strip() != "":
-            nytt_notat = st.text_input("Notat (valgfritt)", value="")
             ny_øvelse = {
                 "name": nytt_navn.strip(),
                 "sets": int(nytt_antall_sett),
                 "note": nytt_notat.strip()
             }
-
 
             # legg til i lista
             st.session_state.data["exercises"].append(ny_øvelse)

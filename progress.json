@@ -1,16 +1,19 @@
 {
     "exercises": [
         {
-            "name": "Knee extension statisk",
-            "sets": 3
+            "name": "Knebøy",
+            "sets": 3,
+            "note": "tung"
         },
         {
             "name": "Benkpress",
-            "sets": 3
+            "sets": 3,
+            "note": "pass på riktig teknikk"
         },
         {
             "name": "Markløft",
-            "sets": 3
+            "sets": 3,
+            "note": "notat"
         }
     ],
     "checks": {}
