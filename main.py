@@ -41,7 +41,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-
 st.title("Vildes treningsprogram for verdens beste knær<3")
 
 DATAFIL = "progress.json"
@@ -93,6 +92,15 @@ if "data" not in st.session_state:
 if "edit_index" not in st.session_state:
     st.session_state.edit_index = None
 
+# Proof of Concept mode (dev-modus for redigering)
+if "poc_mode" not in st.session_state:
+    st.session_state.poc_mode = False
+
+st.session_state.poc_mode = st.toggle(
+    "Proof of Concept mode (endre øvelser)",
+    value=st.session_state.poc_mode
+)
+
 # sørg for at alle checkbox-keys finnes både i persistent data["checks"] og i st.session_state
 for ex in st.session_state.data["exercises"]:
     ant_sett = int(ex["sets"])
@@ -138,35 +146,36 @@ for idx, ex in enumerate(st.session_state.data["exercises"]):
                 st.session_state.data["checks"][key] = st.session_state[key]
                 save_data(st.session_state.data)
 
-    # KNAPPER UNDER SETTENE ⬇️
-    btn_cols = st.columns(3)
+    # KNAPPER UNDER SETTENE (bare i Proof of Concept mode)
+    if st.session_state.poc_mode:
+        btn_cols = st.columns(3)
 
-    with btn_cols[0]:
-        if st.button("⬆️", key=f"up_{idx}", help="Flytt opp"):
-            if idx > 0:
+        with btn_cols[0]:
+            if st.button("⬆️", key=f"up_{idx}", help="Flytt opp"):
+                if idx > 0:
+                    lst = st.session_state.data["exercises"]
+                    lst[idx - 1], lst[idx] = lst[idx], lst[idx - 1]
+                    save_data(st.session_state.data)
+                    st.rerun()
+
+        with btn_cols[1]:
+            if st.button("⬇️", key=f"down_{idx}", help="Flytt ned"):
                 lst = st.session_state.data["exercises"]
-                lst[idx - 1], lst[idx] = lst[idx], lst[idx - 1]
-                save_data(st.session_state.data)
+                if idx < len(lst) - 1:
+                    lst[idx + 1], lst[idx] = lst[idx], lst[idx + 1]
+                    save_data(st.session_state.data)
+                    st.rerun()
+
+        with btn_cols[2]:
+            if st.button("Rediger / Slett", key=f"editbtn_{idx}"):
+                if st.session_state.edit_index == idx:
+                    st.session_state.edit_index = None
+                else:
+                    st.session_state.edit_index = idx
                 st.rerun()
 
-    with btn_cols[1]:
-        if st.button("⬇️", key=f"down_{idx}", help="Flytt ned"):
-            lst = st.session_state.data["exercises"]
-            if idx < len(lst) - 1:
-                lst[idx + 1], lst[idx] = lst[idx], lst[idx + 1]
-                save_data(st.session_state.data)
-                st.rerun()
-
-    with btn_cols[2]:
-        if st.button("Rediger / Slett", key=f"editbtn_{idx}"):
-            if st.session_state.edit_index == idx:
-                st.session_state.edit_index = None
-            else:
-                st.session_state.edit_index = idx
-            st.rerun()
-
-    # editorpanel som før
-    if st.session_state.edit_index == idx:
+    # editorpanel (vises bare hvis modus er på OG riktig index er valgt)
+    if st.session_state.poc_mode and st.session_state.edit_index == idx:
         st.markdown("**Rediger denne øvelsen:**")
         with st.form(f"edit_form_{idx}"):
 
@@ -261,43 +270,44 @@ for idx, ex in enumerate(st.session_state.data["exercises"]):
 
 
 # ---------------- LEGG TIL NY ØVELSE ----------------
-st.subheader("Legg til ny øvelse")
+if st.session_state.poc_mode:
+    st.subheader("Legg til ny øvelse")
 
-with st.form("ny_øvelse_form"):
-    nytt_navn = st.text_input(
-        "Navn på øvelse (ta med antall reps i navnet)",
-        value=""
-    )
-    nytt_antall_sett = st.number_input(
-        "Antall sett",
-        min_value=1,
-        max_value=10,
-        step=1,
-        value=3
-    )
-    nytt_notat = st.text_area(
-        "Notat (valgfritt)",
-        value=""
-    )
+    with st.form("ny_øvelse_form"):
+        nytt_navn = st.text_input(
+            "Navn på øvelse (ta med antall reps i navnet)",
+            value=""
+        )
+        nytt_antall_sett = st.number_input(
+            "Antall sett",
+            min_value=1,
+            max_value=10,
+            step=1,
+            value=3
+        )
+        nytt_notat = st.text_area(
+            "Notat (valgfritt)",
+            value=""
+        )
 
-    submit = st.form_submit_button("Legg til øvelse")
+        submit = st.form_submit_button("Legg til øvelse")
 
-    if submit:
-        if nytt_navn.strip() != "":
-            ny_øvelse = {
-                "name": nytt_navn.strip(),
-                "sets": int(nytt_antall_sett),
-                "note": nytt_notat.strip()
-            }
+        if submit:
+            if nytt_navn.strip() != "":
+                ny_øvelse = {
+                    "name": nytt_navn.strip(),
+                    "sets": int(nytt_antall_sett),
+                    "note": nytt_notat.strip()
+                }
 
-            # legg til i lista
-            st.session_state.data["exercises"].append(ny_øvelse)
+                # legg til i lista
+                st.session_state.data["exercises"].append(ny_øvelse)
 
-            # init checkbox-state for den nye øvelsen
-            for s in range(1, ny_øvelse["sets"] + 1):
-                key = f"{ny_øvelse['name']}_{s}"
-                st.session_state.data["checks"][key] = False
-                st.session_state[key] = False
+                # init checkbox-state for den nye øvelsen
+                for s in range(1, ny_øvelse["sets"] + 1):
+                    key = f"{ny_øvelse['name']}_{s}"
+                    st.session_state.data["checks"][key] = False
+                    st.session_state[key] = False
 
-            save_data(st.session_state.data)
-            st.rerun()
+                save_data(st.session_state.data)
+                st.rerun()
