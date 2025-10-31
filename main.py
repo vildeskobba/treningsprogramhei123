@@ -91,6 +91,21 @@ if "data" not in st.session_state:
 
 if "edit_index" not in st.session_state:
     st.session_state.edit_index = None
+    
+if st.button("Hent program fra JSON"):
+    st.session_state.data = load_data()
+
+    # synk checkboxene så visningen stemmer
+    for ex in st.session_state.data["exercises"]:
+        ant_sett = int(ex["sets"])
+        for s in range(1, ant_sett + 1):
+            key = f"{ex['name']}_{s}"
+            if key not in st.session_state.data["checks"]:
+                st.session_state.data["checks"][key] = False
+            st.session_state[key] = st.session_state.data["checks"][key]
+
+    st.session_state.edit_index = None
+    st.rerun()
 
 # Proof of Concept mode (dev-modus for redigering)
 if "poc_mode" not in st.session_state:
