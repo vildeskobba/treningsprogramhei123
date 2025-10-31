@@ -91,7 +91,7 @@ if "data" not in st.session_state:
 
 if "edit_index" not in st.session_state:
     st.session_state.edit_index = None
-    
+
 if st.button("Hent program fra JSON"):
     st.session_state.data = load_data()
 
@@ -106,6 +106,20 @@ if st.button("Hent program fra JSON"):
 
     st.session_state.edit_index = None
     st.rerun()
+
+# ---------------- RESET ALLE ----------------
+if st.button("Reset alle sjekk-bokser"):
+    for ex in st.session_state.data["exercises"]:
+        ant_sett = int(ex["sets"])
+        for s in range(1, ant_sett + 1):
+            key = f"{ex['name']}_{s}"
+            st.session_state.data["checks"][key] = False
+            st.session_state[key] = False
+    save_data(st.session_state.data)
+    st.rerun()
+
+st.divider()
+
 
 # Proof of Concept mode (dev-modus for redigering)
 if "poc_mode" not in st.session_state:
@@ -127,18 +141,6 @@ for ex in st.session_state.data["exercises"]:
             st.session_state[key] = st.session_state.data["checks"][key]
 
 
-# ---------------- RESET ALLE ----------------
-if st.button("Reset alle sjekk-bokser"):
-    for ex in st.session_state.data["exercises"]:
-        ant_sett = int(ex["sets"])
-        for s in range(1, ant_sett + 1):
-            key = f"{ex['name']}_{s}"
-            st.session_state.data["checks"][key] = False
-            st.session_state[key] = False
-    save_data(st.session_state.data)
-    st.rerun()
-
-st.divider()
 
 # ---------------- VIS OG KONTROLLER HVER ØVELSE ----------------
 for idx, ex in enumerate(st.session_state.data["exercises"]):
