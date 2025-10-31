@@ -1,19 +1,19 @@
 {
     "exercises": [
         {
-            "name": "Knebøy",
-            "sets": 3,
-            "note": "tung"
+            "name": "Sykle 12 min",
+            "sets": 1,
+            "note": "Oppvarming"
         },
         {
-            "name": "Benkpress",
-            "sets": 3,
-            "note": "pass på riktig teknikk"
+            "name": "Knee extension statisk",
+            "sets": 1,
+            "note": "Liten vinkel 30 sek"
         },
         {
-            "name": "Markløft",
-            "sets": 3,
-            "note": "notat"
+            "name": "Knee extension dynamisk 6 reps",
+            "sets": 4,
+            "note": "TUNGT, pass på å ikke ha for stor vinkel, begge opp en ned. "
         }
     ],
     "checks": {}
