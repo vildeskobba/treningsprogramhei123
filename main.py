@@ -105,7 +105,7 @@ for ex in st.session_state.data["exercises"]:
 
 
 # ---------------- RESET ALLE ----------------
-if st.button("Reset alle (uncheck alt)"):
+if st.button("Reset alle sjekk-bokser"):
     for ex in st.session_state.data["exercises"]:
         ant_sett = int(ex["sets"])
         for s in range(1, ant_sett + 1):
