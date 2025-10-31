@@ -118,7 +118,6 @@ if st.button("Reset alle sjekk-bokser"):
     save_data(st.session_state.data)
     st.rerun()
 
-st.divider()
 
 
 # Proof of Concept mode (dev-modus for redigering)
@@ -140,6 +139,7 @@ for ex in st.session_state.data["exercises"]:
         if key not in st.session_state:
             st.session_state[key] = st.session_state.data["checks"][key]
 
+st.divider()
 
 
 # ---------------- VIS OG KONTROLLER HVER ØVELSE ----------------
