@@ -234,9 +234,9 @@ for idx, ex in enumerate(st.session_state.data["exercises"]):
             for s in range(1, gammelt_ant_sett + 1):
                 gammel_key = f"{gammelt_navn}_{s}"
                 if gammel_key in st.session_state.data["checks"]:
-                    del st.session_state.data["checks"][gammelt_key]
+                    del st.session_state.data["checks"][gammel_key]
                 if gammel_key in st.session_state:
-                    del st.session_state[gammelt_key]
+                    del st.session_state[gammel_key]
 
             # legg inn nye keys i persistent og session_state
             for key_name, val in nye_checks_for_ex.items():
