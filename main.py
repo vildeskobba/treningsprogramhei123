@@ -2,7 +2,7 @@ import streamlit as st
 import json
 import os
 
-st.set_page_config(page_title="Treningsprogram", layout="wide")
+st.set_page_config(page_title="Vildes treningsprogram<3", layout="wide")
 st.title("Vildes treningsprogram<3")
 
 DATAFIL = "progress.json"
