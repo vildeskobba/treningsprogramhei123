@@ -42,7 +42,7 @@ st.markdown(
 )
 
 
-st.title("Vildes treningsprogram<3")
+st.title("Vildes treningsprogram for verdens beste knær<3")
 
 DATAFIL = "progress.json"
 
