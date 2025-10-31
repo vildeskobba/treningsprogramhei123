@@ -3,6 +3,18 @@ import json
 import os
 
 st.set_page_config(page_title="Vildes treningsprogram<3", layout="wide")
+st.markdown(
+    """
+    <style>
+        .stApp {
+            background-color: #2e111a;
+            color: white;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 st.title("Vildes treningsprogram<3")
 
 DATAFIL = "progress.json"
@@ -10,9 +22,9 @@ DATAFIL = "progress.json"
 
 def lag_standard_program():
     return [
-        {"name": "Knebøy", "sets": 3},
-        {"name": "Benkpress", "sets": 3},
-        {"name": "Markløft", "sets": 3},
+        {"name": "Eksempel-øvelse 1", "sets": 1},
+        {"name": "Eksempel-øvelse 2", "sets": 2},
+        {"name": "Eksempel-øvelse 3", "sets": 3},
     ]
 
 
