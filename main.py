@@ -125,7 +125,7 @@ if "poc_mode" not in st.session_state:
     st.session_state.poc_mode = False
 
 st.session_state.poc_mode = st.toggle(
-    "Proof of Concept mode (endre øvelser)",
+    "PoC mode",
     value=st.session_state.poc_mode
 )
 
