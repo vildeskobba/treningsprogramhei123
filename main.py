@@ -10,10 +10,18 @@ st.markdown(
             background-color: #2e111a;
             color: #ffe9ec;
         }
+        div[data-testid="stCheckbox"], 
+        div[data-testid="stNumberInput"], 
+        div[data-testid="stTextInput"],
+        textarea, input {
+            background-color: #2e111a !important;
+            color: #ffe9ec !important;
+        }
     </style>
     """,
     unsafe_allow_html=True
 )
+
 
 st.title("Vildes treningsprogram<3")
 
