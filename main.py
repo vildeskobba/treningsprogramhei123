@@ -5,60 +5,104 @@ import os
 st.set_page_config(page_title="Treningsprogram", layout="wide")
 st.title("Treningsprogram")
 
-øvelser = ["Knebøy", "Benkpress", "Markløft"]
-sett_per_øvelse = 3
 DATAFIL = "progress.json"
 
 
-def load_progress():
+def load_data():
     if os.path.exists(DATAFIL):
         with open(DATAFIL, "r") as f:
             return json.load(f)
-    return {}
+    # første gang appen kjører
+    return {
+        "exercises": [
+            {"name": "Knebøy", "sets": 3},
+            {"name": "Benkpress", "sets": 3},
+            {"name": "Markløft", "sets": 3},
+        ],
+        "checks": {}
+    }
 
 
-def save_progress(progress_dict):
+def save_data(data):
     with open(DATAFIL, "w") as f:
-        json.dump(progress_dict, f)
+        json.dump(data, f)
 
 
-# --- init progress (persistent) ---
-if "progress" not in st.session_state:
-    st.session_state.progress = load_progress()
+# --- init i session_state ---
+if "data" not in st.session_state:
+    st.session_state.data = load_data()
 
-# sørg for at alle keys finnes i progress + session_state
-for øvelse in øvelser:
-    for sett in range(1, sett_per_øvelse + 1):
-        key = f"{øvelse}_{sett}"
-        if key not in st.session_state.progress:
-            st.session_state.progress[key] = False
+# sørg for at alle checkbox-keys finnes både i data["checks"] og i st.session_state
+for ex in st.session_state.data["exercises"]:
+    for s in range(1, ex["sets"] + 1):
+        key = f"{ex['name']}_{s}"
+        if key not in st.session_state.data["checks"]:
+            st.session_state.data["checks"][key] = False
         if key not in st.session_state:
-            st.session_state[key] = st.session_state.progress[key]
+            st.session_state[key] = st.session_state.data["checks"][key]
 
 # --- reset knapp ---
 if st.button("Reset alle (uncheck alt)"):
-    # sett alt til False i begge steder
-    for øvelse in øvelser:
-        for sett in range(1, sett_per_øvelse + 1):
-            key = f"{øvelse}_{sett}"
-            st.session_state.progress[key] = False
+    for ex in st.session_state.data["exercises"]:
+        for s in range(1, ex["sets"] + 1):
+            key = f"{ex['name']}_{s}"
+            st.session_state.data["checks"][key] = False
             st.session_state[key] = False
-    save_progress(st.session_state.progress)
+    save_data(st.session_state.data)
     st.rerun()
 
 st.divider()
 
-# --- tegn checkbokser ---
-for øvelse in øvelser:
-    st.subheader(øvelse)
-    cols = st.columns(sett_per_øvelse)
-    for i, sett in enumerate(range(1, sett_per_øvelse + 1)):
-        key = f"{øvelse}_{sett}"
+# --- vis øvelser og checkbokser ---
+for ex in st.session_state.data["exercises"]:
+    st.subheader(ex["name"])
+    cols = st.columns(ex["sets"])
+    for i, s in enumerate(range(1, ex["sets"] + 1)):
+        key = f"{ex['name']}_{s}"
         with cols[i]:
-            # checkbox er bundet til st.session_state[key] automatisk pga key=
-            st.checkbox(f"Set {sett}", key=key)
+            st.checkbox(f"Set {s}", key=key)
+            # sync tilbake til persistent lagring
+            if st.session_state.data["checks"][key] != st.session_state[key]:
+                st.session_state.data["checks"][key] = st.session_state[key]
+                save_data(st.session_state.data)
 
-            # sync tilbake til progress (persistent) hver gang
-            if st.session_state.progress[key] != st.session_state[key]:
-                st.session_state.progress[key] = st.session_state[key]
-                save_progress(st.session_state.progress)
+st.markdown("---")
+
+st.subheader("Legg til ny øvelse")
+
+with st.form("ny_øvelse_form"):
+    nytt_navn = st.text_input(
+        "Navn på øvelse (ta med reps i navnet hvis du vil, f.eks. 'Benkpress 8-8-6')",
+        value=""
+    )
+    nytt_antall_sett = st.number_input(
+        "Antall sett",
+        min_value=1,
+        max_value=10,
+        step=1,
+        value=3
+    )
+
+    submit = st.form_submit_button("Legg til øvelse")
+
+    if submit:
+        # bare legg til hvis navn ikke er tomt
+        if nytt_navn.strip() != "":
+            # legg øvelsen inn i lista
+            ny_øvelse = {
+                "name": nytt_navn.strip(),
+                "sets": int(nytt_antall_sett),
+            }
+            st.session_state.data["exercises"].append(ny_øvelse)
+
+            # init checkbokser for den nye øvelsen
+            for s in range(1, ny_øvelse["sets"] + 1):
+                key = f"{ny_øvelse['name']}_{s}"
+                st.session_state.data["checks"][key] = False
+                st.session_state[key] = False
+
+            # lagre til disk
+            save_data(st.session_state.data)
+
+            # rerun for å vise den nye øvelsen med én gang
+            st.rerun()
