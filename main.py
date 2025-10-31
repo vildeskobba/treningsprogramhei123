@@ -130,6 +130,17 @@ for idx, ex in enumerate(st.session_state.data["exercises"]):
         if "note" in ex and ex["note"]:
             st.caption(ex["note"])
 
+    # checkbokser for set (horisontal rad slik du hadde)
+    cols = st.columns(ant_sett)
+    for i, s in enumerate(range(1, ant_sett + 1)):
+        key = f"{ex['name']}_{s}"
+        with cols[i]:
+            st.checkbox(f"Set {s}", key=key)
+            # sync fra session_state -> persistent lagring
+            if st.session_state.data["checks"][key] != st.session_state[key]:
+                st.session_state.data["checks"][key] = st.session_state[key]
+                save_data(st.session_state.data)
+
     with top_cols[1]:
         # flytt opp
         if st.button("⬆️", key=f"up_{idx}", help="Flytt opp"):
@@ -158,16 +169,7 @@ for idx, ex in enumerate(st.session_state.data["exercises"]):
                 st.session_state.edit_index = idx
             st.rerun()
 
-    # checkbokser for set (horisontal rad slik du hadde)
-    cols = st.columns(ant_sett)
-    for i, s in enumerate(range(1, ant_sett + 1)):
-        key = f"{ex['name']}_{s}"
-        with cols[i]:
-            st.checkbox(f"Set {s}", key=key)
-            # sync fra session_state -> persistent lagring
-            if st.session_state.data["checks"][key] != st.session_state[key]:
-                st.session_state.data["checks"][key] = st.session_state[key]
-                save_data(st.session_state.data)
+
 
     # editorpanel (bare synlig for valgt øvelse)
     if st.session_state.edit_index == idx:
