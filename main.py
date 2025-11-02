@@ -48,18 +48,13 @@ DATAFIL = "progress.json"
 
 def lag_standard_program():
     return [
-        {"name": "Eksempel-øvelse 1", "sets": 1},
-        {"name": "Eksempel-øvelse 2", "sets": 2},
-        {"name": "Eksempel-øvelse 3", "sets": 3},
+        {"name": "Eksempel-øvelse 1", "sets": 1, "reps": "10 reps"},
+        {"name": "Eksempel-øvelse 2", "sets": 2, "reps": "12 reps"},
+        {"name": "Eksempel-øvelse 3", "sets": 3, "reps": "8-10 reps"},
     ]
 
 
 def load_data():
-    # struktur vi forventer:
-    # {
-    #   "exercises": [ { "name": "...", "sets": 3, "note": "..."? }, ... ],
-    #   "checks": { "Benkpress_1": true, ... }
-    # }
     if not os.path.exists(DATAFIL):
         return {
             "exercises": lag_standard_program(),
@@ -69,11 +64,9 @@ def load_data():
     with open(DATAFIL, "r") as f:
         raw = json.load(f)
 
-    # ny stil?
     if "exercises" in raw and "checks" in raw:
         return raw
 
-    # gammel stil (bare checks)
     return {
         "exercises": lag_standard_program(),
         "checks": raw if isinstance(raw, dict) else {}
@@ -92,10 +85,10 @@ if "data" not in st.session_state:
 if "edit_index" not in st.session_state:
     st.session_state.edit_index = None
 
+# Hent program fra JSON-knapp
 if st.button("Hent program fra JSON"):
     st.session_state.data = load_data()
 
-    # synk checkboxene så visningen stemmer
     for ex in st.session_state.data["exercises"]:
         ant_sett = int(ex["sets"])
         for s in range(1, ant_sett + 1):
@@ -107,7 +100,7 @@ if st.button("Hent program fra JSON"):
     st.session_state.edit_index = None
     st.rerun()
 
-# ---------------- RESET ALLE ----------------
+# Reset alle checkbokser
 if st.button("Reset alle sjekk-bokser"):
     for ex in st.session_state.data["exercises"]:
         ant_sett = int(ex["sets"])
@@ -118,9 +111,7 @@ if st.button("Reset alle sjekk-bokser"):
     save_data(st.session_state.data)
     st.rerun()
 
-
-
-# Proof of Concept mode (dev-modus for redigering)
+# Proof of Concept mode toggle
 if "poc_mode" not in st.session_state:
     st.session_state.poc_mode = False
 
@@ -129,7 +120,7 @@ st.session_state.poc_mode = st.toggle(
     value=st.session_state.poc_mode
 )
 
-# sørg for at alle checkbox-keys finnes både i persistent data["checks"] og i st.session_state
+# sørg for at alle checkbox-keys finnes i session_state
 for ex in st.session_state.data["exercises"]:
     ant_sett = int(ex["sets"])
     for s in range(1, ant_sett + 1):
@@ -141,20 +132,20 @@ for ex in st.session_state.data["exercises"]:
 
 st.divider()
 
-
 # ---------------- VIS OG KONTROLLER HVER ØVELSE ----------------
 for idx, ex in enumerate(st.session_state.data["exercises"]):
     ant_sett = int(ex["sets"])
 
-    # topplinje: KUN navn (+ note)
+    # topplinje: navn + reps + note
     top_cols = st.columns([1])
     with top_cols[0]:
         st.subheader(ex["name"])
 
-        # vis antall reps som egen linje
+        # ny linje: reps
         if "reps" in ex and ex["reps"]:
-            st.text(f"{ex['reps']} reps")
+            st.text(f"{ex['reps']}")
 
+        # note under reps
         if "note" in ex and ex["note"]:
             st.caption(ex["note"])
 
@@ -168,7 +159,7 @@ for idx, ex in enumerate(st.session_state.data["exercises"]):
                 st.session_state.data["checks"][key] = st.session_state[key]
                 save_data(st.session_state.data)
 
-    # KNAPPER UNDER SETTENE (bare i Proof of Concept mode)
+    # KNAPPER UNDER SETTENE (bare i PoC mode)
     if st.session_state.poc_mode:
         btn_cols = st.columns(3)
 
@@ -196,14 +187,18 @@ for idx, ex in enumerate(st.session_state.data["exercises"]):
                     st.session_state.edit_index = idx
                 st.rerun()
 
-    # editorpanel (vises bare hvis modus er på OG riktig index er valgt)
+    # editorpanel (bare i PoC mode + valgt øvelse)
     if st.session_state.poc_mode and st.session_state.edit_index == idx:
         st.markdown("**Rediger denne øvelsen:**")
         with st.form(f"edit_form_{idx}"):
 
             nytt_navn = st.text_input(
-                "Nytt navn (inkl reps i navnet hvis du vil)",
+                "Nytt navn (f.eks 'Bulgarsk split squat 12 reps')",
                 value=ex["name"]
+            )
+            nytt_reps = st.text_input(
+                "Antall reps",
+                value=ex.get("reps", "")
             )
             nytt_sett = st.number_input(
                 "Antall sett",
@@ -212,9 +207,6 @@ for idx, ex in enumerate(st.session_state.data["exercises"]):
                 step=1,
                 value=ant_sett
             )
-
-            nytt_antall_reps = st.text_input("Antall reps", value="")
-
             nytt_notat = st.text_area(
                 "Notat (valgfritt)",
                 value=ex.get("note", "")
@@ -240,9 +232,11 @@ for idx, ex in enumerate(st.session_state.data["exercises"]):
             ny_ex = {
                 "name": nytt_navn_clean,
                 "sets": nytt_antall_sett,
+                "reps": nytt_reps.strip(),
                 "note": nytt_notat.strip()
             }
 
+            # bygg nye checkbox keys til denne øvelsen
             nye_checks_for_ex = {}
             for s in range(1, nytt_antall_sett + 1):
                 gammel_key = f"{gammelt_navn}_{s}"
@@ -256,6 +250,7 @@ for idx, ex in enumerate(st.session_state.data["exercises"]):
                 else:
                     nye_checks_for_ex[ny_key] = False
 
+            # fjern gamle keys
             for s in range(1, gammelt_ant_sett + 1):
                 gammel_key = f"{gammelt_navn}_{s}"
                 if gammel_key in st.session_state.data["checks"]:
@@ -263,10 +258,12 @@ for idx, ex in enumerate(st.session_state.data["exercises"]):
                 if gammel_key in st.session_state:
                     del st.session_state[gammel_key]
 
+            # legg inn nye keys
             for key_name, val in nye_checks_for_ex.items():
                 st.session_state.data["checks"][key_name] = val
                 st.session_state[key_name] = val
 
+            # lagre ny info på øvelsen
             st.session_state.data["exercises"][idx] = ny_ex
 
             save_data(st.session_state.data)
@@ -300,7 +297,11 @@ if st.session_state.poc_mode:
 
     with st.form("ny_øvelse_form"):
         nytt_navn = st.text_input(
-            "Navn på øvelse (ta med antall reps i navnet)",
+            "Navn på øvelse",
+            value=""
+        )
+        nytt_reps = st.text_input(
+            "Antall reps",
             value=""
         )
         nytt_antall_sett = st.number_input(
@@ -309,13 +310,6 @@ if st.session_state.poc_mode:
             max_value=10,
             step=1,
             value=3
-        )
-        nytt_antall_reps = st.number_input(
-            "Antall reps",
-            min_value=1,
-            max_value=10,
-            step=1,
-            value=10
         )
         nytt_notat = st.text_area(
             "Notat (valgfritt)",
@@ -329,7 +323,7 @@ if st.session_state.poc_mode:
                 ny_øvelse = {
                     "name": nytt_navn.strip(),
                     "sets": int(nytt_antall_sett),
-                    "reps": int(nytt_antall_reps),
+                    "reps": nytt_reps.strip(),
                     "note": nytt_notat.strip()
                 }
 
