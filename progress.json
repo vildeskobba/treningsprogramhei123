@@ -11,9 +11,39 @@
             "note": "Liten vinkel 30 sek"
         },
         {
-            "name": "Knee extension dynamisk 6 reps",
+            "name": "Knee extension dynamisk, 6 reps",
             "sets": 4,
             "note": "TUNGT, pass på å ikke ha for stor vinkel, begge opp en ned. "
+        },
+        {
+            "name": "Utfallsposisjon m/strikk, 20 reps",
+            "sets": 3,
+            "note": "Skal brenne i ski-muskel. Brk stram strikk, pass på å ikke bevege overkroppen og ha hofte-kne-fot alignment. "
+        },
+        {
+            "name": "Mage, pelvic tilt",
+            "sets": 2,
+            "note": "For å aktivere magen, hver rep skal være så tung som mulig, PRESS korsryggen ned i underlaget. "
+        },
+        {
+            "name": "Strakmark",
+            "sets": 4,
+            "note": "Den tekniske for hamstring. Skal strekke i hamtring på bunn, tilte pelvis på vei opp, skvise mage og rumpe. "
+        },
+        {
+            "name": "Benpress vanlig, 10 reps",
+            "sets": 3,
+            "note": "Med strikk, pass på at knærne ikke kommer nær hverandre. "
+        },
+        {
+            "name": "Eksplosiv benpress, 12 reps",
+            "sets": 4,
+            "note": "Også med strikk, pass på knærne ikke kommer nær hverandre. Nesten-hopp på toppen, kontollert på nedturen. "
+        },
+        {
+            "name": "Mage, pelvic tilt",
+            "sets": 2,
+            "note": "For å aktivere magen, hver rep skal være så tung som mulig, PRESS korsryggen ned i underlaget. "
         }
     ],
     "checks": {}
