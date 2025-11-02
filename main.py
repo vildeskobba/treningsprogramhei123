@@ -36,6 +36,11 @@ st.markdown(
         button:hover {
             background-color: #471d29 !important;
         }
+        /* Endre farge på checkboks når den er krysset av */
+        div[data-testid="stCheckbox"] input[type="checkbox"]:checked {
+            accent-color: #ffb6c1 !important; /* lyserosa */
+        }
+
     </style>
     """,
     unsafe_allow_html=True
