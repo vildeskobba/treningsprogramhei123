@@ -150,6 +150,11 @@ for idx, ex in enumerate(st.session_state.data["exercises"]):
     top_cols = st.columns([1])
     with top_cols[0]:
         st.subheader(ex["name"])
+
+        # vis antall reps som egen linje
+        if "reps" in ex and ex["reps"]:
+            st.text(f"{ex['reps']} reps")
+
         if "note" in ex and ex["note"]:
             st.caption(ex["note"])
 
@@ -207,6 +212,9 @@ for idx, ex in enumerate(st.session_state.data["exercises"]):
                 step=1,
                 value=ant_sett
             )
+
+            nytt_antall_reps = st.text_input("Antall reps", value="")
+
             nytt_notat = st.text_area(
                 "Notat (valgfritt)",
                 value=ex.get("note", "")
@@ -302,6 +310,13 @@ if st.session_state.poc_mode:
             step=1,
             value=3
         )
+        nytt_antall_reps = st.number_input(
+            "Antall reps",
+            min_value=1,
+            max_value=10,
+            step=1,
+            value=10
+        )
         nytt_notat = st.text_area(
             "Notat (valgfritt)",
             value=""
@@ -314,6 +329,7 @@ if st.session_state.poc_mode:
                 ny_øvelse = {
                     "name": nytt_navn.strip(),
                     "sets": int(nytt_antall_sett),
+                    "reps": int(nytt_antall_reps),
                     "note": nytt_notat.strip()
                 }
 
