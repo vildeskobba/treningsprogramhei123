@@ -40,6 +40,11 @@ st.markdown(
         div[data-testid="stCheckbox"] input[type="checkbox"]:checked {
             accent-color: #ffb6c1 !important; /* lyserosa */
         }
+        /* Litt innrykk på checkboksene */
+        div[data-testid="stCheckbox"] {
+            margin-left: 20px;
+        }
+
 
     </style>
     """,
