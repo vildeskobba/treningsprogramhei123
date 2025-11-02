@@ -62,6 +62,13 @@ st.markdown(
             transform: scale(1.3); /* juster 1.1–1.5 etter smak */
             margin-right: 8px;
         }
+        /* Gjør overskrifter større igjen */
+        h1 {
+            font-size: 2.2em !important;  /* hovedtittel */
+        }
+        h2, .stSubheader, h3 {
+            font-size: 1.6em !important;  /* underoverskrifter */
+        }
 
 
     </style>
