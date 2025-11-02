@@ -47,7 +47,7 @@ st.markdown(
 
         /* Litt innrykk på checkboksene */
         div[data-testid="stCheckbox"] {
-            margin-left: 20px;
+            margin-left: 30px;
         }
 
         /* Større tekst generelt */
