@@ -37,9 +37,14 @@ st.markdown(
             background-color: #471d29 !important;
         }
         /* Endre farge på checkboks når den er krysset av */
-        div[data-testid="stCheckbox"] input[type="checkbox"]:checked {
+        div[data-testid="stCheckbox"] input[type="checkbox"] {
             accent-color: #ffb6c1 !important; /* lyserosa */
         }
+
+        div[data-testid="stCheckbox"] > label > div[data-testid="stMarkdownContainer"] {
+            color: #ffe9ec !important; /* behold lyserosa tekst */
+        }
+
         /* Litt innrykk på checkboksene */
         div[data-testid="stCheckbox"] {
             margin-left: 20px;
