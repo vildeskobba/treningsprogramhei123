@@ -50,6 +50,19 @@ st.markdown(
             margin-left: 20px;
         }
 
+        /* Større tekst generelt */
+        html, body, * {
+            font-size: 18px !important; /* øk fra standard 14–16px */
+        }
+
+        /* Gjør checkboksene større */
+        div[data-testid="stCheckbox"] input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            transform: scale(1.3); /* juster 1.1–1.5 etter smak */
+            margin-right: 8px;
+        }
+
 
     </style>
     """,
